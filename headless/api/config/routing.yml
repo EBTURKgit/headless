@@ -1,0 +1,634 @@
+# ── Auth ─────────────────────────────────────────────────────────────────────
+headless_api_auth_login:
+    path: /api/v1/auth/login
+    defaults: { _controller: headless.api.controller.auth:login }
+    methods: [POST]
+
+headless_api_auth_logout:
+    path: /api/v1/auth/logout
+    defaults: { _controller: headless.api.controller.auth:logout }
+    methods: [POST]
+
+headless_api_auth_me:
+    path: /api/v1/auth/me
+    defaults: { _controller: headless.api.controller.auth:me }
+    methods: [GET]
+
+headless_api_auth_refresh:
+    path: /api/v1/auth/refresh
+    defaults: { _controller: headless.api.controller.auth:refresh }
+    methods: [POST]
+
+headless_api_forgot_password:
+    path: /api/v1/auth/forgot-password
+    defaults: { _controller: headless.api.controller.auth:forgotPassword }
+    methods: [POST]
+
+headless_api_reset_password:
+    path: /api/v1/auth/reset-password
+    defaults: { _controller: headless.api.controller.auth:resetPassword }
+    methods: [POST]
+
+# ── Register ─────────────────────────────────────────────────────────────────
+headless_api_register:
+    path: /api/v1/register
+    defaults: { _controller: headless.api.controller.register:register }
+    methods: [POST]
+
+headless_api_verify_email:
+    path: /api/v1/register/verify/{token}
+    defaults: { _controller: headless.api.controller.register:verifyEmail }
+    methods: [GET]
+
+headless_api_resend_verification:
+    path: /api/v1/register/resend-verification
+    defaults: { _controller: headless.api.controller.register:resendVerification }
+    methods: [POST]
+
+# ── Forum ────────────────────────────────────────────────────────────────────
+headless_api_forums:
+    path: /api/v1/forums
+    defaults: { _controller: headless.api.controller.forum:index }
+    methods: [GET]
+
+headless_api_forum_show:
+    path: /api/v1/forums/{forum_id}
+    defaults: { _controller: headless.api.controller.forum:show }
+    methods: [GET]
+    requirements: { forum_id: '\d+' }
+
+# ── Topic ────────────────────────────────────────────────────────────────────
+headless_api_topics:
+    path: /api/v1/forums/{forum_id}/topics
+    defaults: { _controller: headless.api.controller.topic:index }
+    methods: [GET]
+    requirements: { forum_id: '\d+' }
+
+headless_api_topic_show:
+    path: /api/v1/topics/{topic_id}
+    defaults: { _controller: headless.api.controller.topic:show }
+    methods: [GET]
+    requirements: { topic_id: '\d+' }
+
+headless_api_topic_create:
+    path: /api/v1/forums/{forum_id}/topics
+    defaults: { _controller: headless.api.controller.topic:create }
+    methods: [POST]
+    requirements: { forum_id: '\d+' }
+
+headless_api_topic_update:
+    path: /api/v1/topics/{topic_id}
+    defaults: { _controller: headless.api.controller.topic:update }
+    methods: [PUT, PATCH]
+    requirements: { topic_id: '\d+' }
+
+headless_api_topic_delete:
+    path: /api/v1/topics/{topic_id}
+    defaults: { _controller: headless.api.controller.topic:delete }
+    methods: [DELETE]
+    requirements: { topic_id: '\d+' }
+
+headless_api_topic_subscribe:
+    path: /api/v1/topics/{topic_id}/subscribe
+    defaults: { _controller: headless.api.controller.topic:subscribe }
+    methods: [POST, DELETE]
+    requirements: { topic_id: '\d+' }
+
+# ── Post ─────────────────────────────────────────────────────────────────────
+headless_api_posts:
+    path: /api/v1/topics/{topic_id}/posts
+    defaults: { _controller: headless.api.controller.post:index }
+    methods: [GET]
+    requirements: { topic_id: '\d+' }
+
+headless_api_post_create:
+    path: /api/v1/topics/{topic_id}/posts
+    defaults: { _controller: headless.api.controller.post:create }
+    methods: [POST]
+    requirements: { topic_id: '\d+' }
+
+headless_api_post_show:
+    path: /api/v1/posts/{post_id}
+    defaults: { _controller: headless.api.controller.post:show }
+    methods: [GET]
+    requirements: { post_id: '\d+' }
+
+headless_api_post_update:
+    path: /api/v1/posts/{post_id}
+    defaults: { _controller: headless.api.controller.post:update }
+    methods: [PUT, PATCH]
+    requirements: { post_id: '\d+' }
+
+headless_api_post_delete:
+    path: /api/v1/posts/{post_id}
+    defaults: { _controller: headless.api.controller.post:delete }
+    methods: [DELETE]
+    requirements: { post_id: '\d+' }
+
+headless_api_post_report:
+    path: /api/v1/posts/{post_id}/report
+    defaults: { _controller: headless.api.controller.post:report }
+    methods: [POST]
+    requirements: { post_id: '\d+' }
+
+headless_api_post_react:
+    path: /api/v1/posts/{post_id}/react
+    defaults: { _controller: headless.api.controller.post:react }
+    methods: [POST]
+    requirements: { post_id: '\d+' }
+
+headless_api_post_reactions:
+    path: /api/v1/posts/{post_id}/reactions
+    defaults: { _controller: headless.api.controller.post:reactions }
+    methods: [GET]
+    requirements: { post_id: '\d+' }
+
+# ── User ─────────────────────────────────────────────────────────────────────
+headless_api_users:
+    path: /api/v1/users
+    defaults: { _controller: headless.api.controller.user:index }
+    methods: [GET]
+
+headless_api_user_show:
+    path: /api/v1/users/{user_id}
+    defaults: { _controller: headless.api.controller.user:show }
+    methods: [GET]
+    requirements: { user_id: '\d+' }
+
+headless_api_user_posts:
+    path: /api/v1/users/{user_id}/posts
+    defaults: { _controller: headless.api.controller.user:posts }
+    methods: [GET]
+    requirements: { user_id: '\d+' }
+
+headless_api_user_topics:
+    path: /api/v1/users/{user_id}/topics
+    defaults: { _controller: headless.api.controller.user:topics }
+    methods: [GET]
+    requirements: { user_id: '\d+' }
+
+headless_api_user_update:
+    path: /api/v1/users/{user_id}
+    defaults: { _controller: headless.api.controller.user:update }
+    methods: [PUT, PATCH]
+    requirements: { user_id: '\d+' }
+
+headless_api_user_avatar:
+    path: /api/v1/users/{user_id}/avatar
+    defaults: { _controller: headless.api.controller.user:avatar }
+    methods: [POST, DELETE]
+    requirements: { user_id: '\d+' }
+
+headless_api_user_groups:
+    path: /api/v1/users/{user_id}/groups
+    defaults: { _controller: headless.api.controller.user:groups }
+    methods: [GET]
+    requirements: { user_id: '\d+' }
+
+# ── Private Messages ─────────────────────────────────────────────────────────
+headless_api_messages:
+    path: /api/v1/messages
+    defaults: { _controller: headless.api.controller.message:index }
+    methods: [GET]
+
+headless_api_message_create:
+    path: /api/v1/messages
+    defaults: { _controller: headless.api.controller.message:create }
+    methods: [POST]
+
+headless_api_message_show:
+    path: /api/v1/messages/{message_id}
+    defaults: { _controller: headless.api.controller.message:show }
+    methods: [GET]
+    requirements: { message_id: '\d+' }
+
+headless_api_message_reply:
+    path: /api/v1/messages/{message_id}/reply
+    defaults: { _controller: headless.api.controller.message:reply }
+    methods: [POST]
+    requirements: { message_id: '\d+' }
+
+headless_api_message_delete:
+    path: /api/v1/messages/{message_id}
+    defaults: { _controller: headless.api.controller.message:delete }
+    methods: [DELETE]
+    requirements: { message_id: '\d+' }
+
+headless_api_message_mark_read:
+    path: /api/v1/messages/{message_id}/read
+    defaults: { _controller: headless.api.controller.message:markRead }
+    methods: [POST]
+    requirements: { message_id: '\d+' }
+
+headless_api_message_mark_unread:
+    path: /api/v1/messages/{message_id}/unread
+    defaults: { _controller: headless.api.controller.message:markUnread }
+    methods: [POST]
+    requirements: { message_id: '\d+' }
+
+headless_api_message_folders:
+    path: /api/v1/messages/folders
+    defaults: { _controller: headless.api.controller.message:folders }
+    methods: [GET]
+
+headless_api_message_move:
+    path: /api/v1/messages/{message_id}/move
+    defaults: { _controller: headless.api.controller.message:move }
+    methods: [POST]
+    requirements: { message_id: '\d+' }
+
+# ── Bookmarks ────────────────────────────────────────────────────────────────
+headless_api_bookmarks:
+    path: /api/v1/bookmarks
+    defaults: { _controller: headless.api.controller.bookmark:index }
+    methods: [GET]
+
+headless_api_bookmark_create:
+    path: /api/v1/topics/{topic_id}/bookmark
+    defaults: { _controller: headless.api.controller.bookmark:create }
+    methods: [POST]
+    requirements: { topic_id: '\d+' }
+
+headless_api_bookmark_delete:
+    path: /api/v1/topics/{topic_id}/bookmark
+    defaults: { _controller: headless.api.controller.bookmark:delete }
+    methods: [DELETE]
+    requirements: { topic_id: '\d+' }
+
+# ── Drafts ───────────────────────────────────────────────────────────────────
+headless_api_drafts:
+    path: /api/v1/drafts
+    defaults: { _controller: headless.api.controller.draft:index }
+    methods: [GET]
+
+headless_api_draft_create:
+    path: /api/v1/drafts
+    defaults: { _controller: headless.api.controller.draft:create }
+    methods: [POST]
+
+headless_api_draft_show:
+    path: /api/v1/drafts/{draft_id}
+    defaults: { _controller: headless.api.controller.draft:show }
+    methods: [GET]
+    requirements: { draft_id: '\d+' }
+
+headless_api_draft_update:
+    path: /api/v1/drafts/{draft_id}
+    defaults: { _controller: headless.api.controller.draft:update }
+    methods: [PUT, PATCH]
+    requirements: { draft_id: '\d+' }
+
+headless_api_draft_delete:
+    path: /api/v1/drafts/{draft_id}
+    defaults: { _controller: headless.api.controller.draft:delete }
+    methods: [DELETE]
+    requirements: { draft_id: '\d+' }
+
+# ── Polls ────────────────────────────────────────────────────────────────────
+headless_api_poll_show:
+    path: /api/v1/polls/{poll_id}
+    defaults: { _controller: headless.api.controller.poll:show }
+    methods: [GET]
+    requirements: { poll_id: '\d+' }
+
+headless_api_poll_vote:
+    path: /api/v1/polls/{poll_id}/vote
+    defaults: { _controller: headless.api.controller.poll:vote }
+    methods: [POST]
+    requirements: { poll_id: '\d+' }
+
+headless_api_poll_results:
+    path: /api/v1/polls/{poll_id}/results
+    defaults: { _controller: headless.api.controller.poll:results }
+    methods: [GET]
+    requirements: { poll_id: '\d+' }
+
+headless_api_poll_change_vote:
+    path: /api/v1/polls/{poll_id}/vote
+    defaults: { _controller: headless.api.controller.poll:changeVote }
+    methods: [PUT]
+    requirements: { poll_id: '\d+' }
+
+# ── Friends & Foes ───────────────────────────────────────────────────────────
+headless_api_friends:
+    path: /api/v1/friends
+    defaults: { _controller: headless.api.controller.friend:index }
+    methods: [GET]
+
+headless_api_friend_add:
+    path: /api/v1/friends/{user_id}
+    defaults: { _controller: headless.api.controller.friend:add }
+    methods: [POST]
+    requirements: { user_id: '\d+' }
+
+headless_api_friend_remove:
+    path: /api/v1/friends/{user_id}
+    defaults: { _controller: headless.api.controller.friend:remove }
+    methods: [DELETE]
+    requirements: { user_id: '\d+' }
+
+headless_api_foes:
+    path: /api/v1/foes
+    defaults: { _controller: headless.api.controller.friend:foes }
+    methods: [GET]
+
+headless_api_foe_add:
+    path: /api/v1/foes/{user_id}
+    defaults: { _controller: headless.api.controller.friend:addFoe }
+    methods: [POST]
+    requirements: { user_id: '\d+' }
+
+headless_api_foe_remove:
+    path: /api/v1/foes/{user_id}
+    defaults: { _controller: headless.api.controller.friend:removeFoe }
+    methods: [DELETE]
+    requirements: { user_id: '\d+' }
+
+# ── User Groups ──────────────────────────────────────────────────────────────
+headless_api_groups:
+    path: /api/v1/groups
+    defaults: { _controller: headless.api.controller.group:index }
+    methods: [GET]
+
+headless_api_group_show:
+    path: /api/v1/groups/{group_id}
+    defaults: { _controller: headless.api.controller.group:show }
+    methods: [GET]
+    requirements: { group_id: '\d+' }
+
+headless_api_group_members:
+    path: /api/v1/groups/{group_id}/members
+    defaults: { _controller: headless.api.controller.group:members }
+    methods: [GET]
+    requirements: { group_id: '\d+' }
+
+# ── Profile Fields ───────────────────────────────────────────────────────────
+headless_api_profile_fields:
+    path: /api/v1/profile-fields
+    defaults: { _controller: headless.api.controller.profilefield:index }
+    methods: [GET]
+
+headless_api_profile_field_show:
+    path: /api/v1/profile-fields/{field_id}
+    defaults: { _controller: headless.api.controller.profilefield:show }
+    methods: [GET]
+    requirements: { field_id: '\d+' }
+
+# ── Favorite Forums ──────────────────────────────────────────────────────────
+headless_api_favorites:
+    path: /api/v1/favorites
+    defaults: { _controller: headless.api.controller.favorite:index }
+    methods: [GET]
+
+headless_api_favorite_add:
+    path: /api/v1/forums/{forum_id}/favorite
+    defaults: { _controller: headless.api.controller.favorite:add }
+    methods: [POST]
+    requirements: { forum_id: '\d+' }
+
+headless_api_favorite_remove:
+    path: /api/v1/forums/{forum_id}/favorite
+    defaults: { _controller: headless.api.controller.favorite:remove }
+    methods: [DELETE]
+    requirements: { forum_id: '\d+' }
+
+# ── Reports ──────────────────────────────────────────────────────────────────
+headless_api_reports:
+    path: /api/v1/reports
+    defaults: { _controller: headless.api.controller.report:index }
+    methods: [GET]
+
+headless_api_report_show:
+    path: /api/v1/reports/{report_id}
+    defaults: { _controller: headless.api.controller.report:show }
+    methods: [GET]
+    requirements: { report_id: '\d+' }
+
+headless_api_report_resolve:
+    path: /api/v1/reports/{report_id}/resolve
+    defaults: { _controller: headless.api.controller.report:resolve }
+    methods: [POST]
+    requirements: { report_id: '\d+' }
+
+# ── Logs ─────────────────────────────────────────────────────────────────────
+headless_api_logs:
+    path: /api/v1/logs
+    defaults: { _controller: headless.api.controller.log:index }
+    methods: [GET]
+
+headless_api_log_show:
+    path: /api/v1/logs/{log_id}
+    defaults: { _controller: headless.api.controller.log:show }
+    methods: [GET]
+    requirements: { log_id: '\d+' }
+
+# ── Events ───────────────────────────────────────────────────────────────────
+headless_api_events:
+    path: /api/v1/events
+    defaults: { _controller: headless.api.controller.event:index }
+    methods: [GET]
+
+headless_api_event_show:
+    path: /api/v1/events/{event_id}
+    defaults: { _controller: headless.api.controller.event:show }
+    methods: [GET]
+    requirements: { event_id: '\d+' }
+
+headless_api_event_create:
+    path: /api/v1/events
+    defaults: { _controller: headless.api.controller.event:create }
+    methods: [POST]
+
+headless_api_event_update:
+    path: /api/v1/events/{event_id}
+    defaults: { _controller: headless.api.controller.event:update }
+    methods: [PUT, PATCH]
+    requirements: { event_id: '\d+' }
+
+headless_api_event_delete:
+    path: /api/v1/events/{event_id}
+    defaults: { _controller: headless.api.controller.event:delete }
+    methods: [DELETE]
+    requirements: { event_id: '\d+' }
+
+headless_api_event_attend:
+    path: /api/v1/events/{event_id}/attend
+    defaults: { _controller: headless.api.controller.event:attend }
+    methods: [POST]
+    requirements: { event_id: '\d+' }
+
+# ── Tags ─────────────────────────────────────────────────────────────────────
+headless_api_tags:
+    path: /api/v1/tags
+    defaults: { _controller: headless.api.controller.tag:index }
+    methods: [GET]
+
+headless_api_tag_topics:
+    path: /api/v1/tags/{tag_id}/topics
+    defaults: { _controller: headless.api.controller.tag:topics }
+    methods: [GET]
+    requirements: { tag_id: '\d+' }
+
+headless_api_topic_tags:
+    path: /api/v1/topics/{topic_id}/tags
+    defaults: { _controller: headless.api.controller.tag:topicTags }
+    methods: [GET]
+    requirements: { topic_id: '\d+' }
+
+headless_api_topic_add_tag:
+    path: /api/v1/topics/{topic_id}/tags/{tag_id}
+    defaults: { _controller: headless.api.controller.tag:addTag }
+    methods: [POST]
+    requirements: { topic_id: '\d+', tag_id: '\d+' }
+
+headless_api_topic_remove_tag:
+    path: /api/v1/topics/{topic_id}/tags/{tag_id}
+    defaults: { _controller: headless.api.controller.tag:removeTag }
+    methods: [DELETE]
+    requirements: { topic_id: '\d+', tag_id: '\d+' }
+
+# ── Search ───────────────────────────────────────────────────────────────────
+headless_api_search:
+    path: /api/v1/search
+    defaults: { _controller: headless.api.controller.search:index }
+    methods: [GET]
+
+headless_api_save_search:
+    path: /api/v1/search/save
+    defaults: { _controller: headless.api.controller.search:save }
+    methods: [POST]
+
+headless_api_saved_searches:
+    path: /api/v1/search/saved
+    defaults: { _controller: headless.api.controller.search:saved }
+    methods: [GET]
+
+headless_api_saved_search_show:
+    path: /api/v1/search/saved/{search_id}
+    defaults: { _controller: headless.api.controller.search:savedSearch }
+    methods: [GET]
+    requirements: { search_id: '\d+' }
+
+headless_api_saved_search_delete:
+    path: /api/v1/search/saved/{search_id}
+    defaults: { _controller: headless.api.controller.search:deleteSavedSearch }
+    methods: [DELETE]
+    requirements: { search_id: '\d+' }
+
+# ── Notification ─────────────────────────────────────────────────────────────
+headless_api_notifications:
+    path: /api/v1/notifications
+    defaults: { _controller: headless.api.controller.notification:index }
+    methods: [GET]
+
+headless_api_notification_read:
+    path: /api/v1/notifications/{notification_id}/read
+    defaults: { _controller: headless.api.controller.notification:markRead }
+    methods: [POST]
+    requirements: { notification_id: '\d+' }
+
+headless_api_notifications_read_all:
+    path: /api/v1/notifications/read-all
+    defaults: { _controller: headless.api.controller.notification:markAllRead }
+    methods: [POST]
+
+# ── Moderation ───────────────────────────────────────────────────────────────
+headless_api_mod_topic_lock:
+    path: /api/v1/mod/topics/{topic_id}/lock
+    defaults: { _controller: headless.api.controller.moderation:lockTopic }
+    methods: [POST, DELETE]
+    requirements: { topic_id: '\d+' }
+
+headless_api_mod_topic_move:
+    path: /api/v1/mod/topics/{topic_id}/move
+    defaults: { _controller: headless.api.controller.moderation:moveTopic }
+    methods: [POST]
+    requirements: { topic_id: '\d+' }
+
+headless_api_mod_topic_pin:
+    path: /api/v1/mod/topics/{topic_id}/pin
+    defaults: { _controller: headless.api.controller.moderation:pinTopic }
+    methods: [POST, DELETE]
+    requirements: { topic_id: '\d+' }
+
+headless_api_mod_post_approve:
+    path: /api/v1/mod/posts/{post_id}/approve
+    defaults: { _controller: headless.api.controller.moderation:approvePost }
+    methods: [POST]
+    requirements: { post_id: '\d+' }
+
+headless_api_mod_user_ban:
+    path: /api/v1/mod/users/{user_id}/ban
+    defaults: { _controller: headless.api.controller.moderation:banUser }
+    methods: [POST, DELETE]
+    requirements: { user_id: '\d+' }
+
+headless_api_mod_reports:
+    path: /api/v1/mod/reports
+    defaults: { _controller: headless.api.controller.moderation:reports }
+    methods: [GET]
+
+# ── Attachment ───────────────────────────────────────────────────────────────
+headless_api_attachment_upload:
+    path: /api/v1/attachments
+    defaults: { _controller: headless.api.controller.attachment:upload }
+    methods: [POST]
+
+headless_api_attachment_delete:
+    path: /api/v1/attachments/{attach_id}
+    defaults: { _controller: headless.api.controller.attachment:delete }
+    methods: [DELETE]
+    requirements: { attach_id: '\d+' }
+
+# ── Options ──────────────────────────────────────────────────────────────────
+headless_api_languages:
+    path: /api/v1/options/languages
+    defaults: { _controller: headless.api.controller.options:languages }
+    methods: [GET]
+
+headless_api_set_language:
+    path: /api/v1/options/language
+    defaults: { _controller: headless.api.controller.options:setLanguage }
+    methods: [POST]
+
+headless_api_styles:
+    path: /api/v1/options/styles
+    defaults: { _controller: headless.api.controller.options:styles }
+    methods: [GET]
+
+headless_api_set_style:
+    path: /api/v1/options/style
+    defaults: { _controller: headless.api.controller.options:setStyle }
+    methods: [POST]
+
+# ── Meta / Site ──────────────────────────────────────────────────────────────
+headless_api_meta:
+    path: /api/v1/meta
+    defaults: { _controller: headless.api.controller.meta:index }
+    methods: [GET]
+
+headless_api_meta_stats:
+    path: /api/v1/meta/stats
+    defaults: { _controller: headless.api.controller.meta:stats }
+    methods: [GET]
+
+headless_api_meta_bbcode_preview:
+    path: /api/v1/meta/bbcode-preview
+    defaults: { _controller: headless.api.controller.meta:bbcodePreview }
+    methods: [POST]
+
+headless_api_meta_online:
+    path: /api/v1/meta/online
+    defaults: { _controller: headless.api.controller.meta:onlineUsers }
+    methods: [GET]
+
+# ── Documentation ────────────────────────────────────────────────────────────
+headless_api_docs:
+    path: /api/v1/docs
+    defaults: { _controller: headless.api.controller.documentation:index }
+    methods: [GET]
+
+headless_api_docs_ui:
+    path: /api/v1/docs/ui
+    defaults: { _controller: headless.api.controller.documentation:ui }
+    methods: [GET]

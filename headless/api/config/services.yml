@@ -1,0 +1,443 @@
+parameters:
+    tables.headless.api_tokens: '%core.table_prefix%api_tokens'
+    tables.headless.api_bookmarks: '%core.table_prefix%api_bookmarks'
+    tables.headless.api_favorites: '%core.table_prefix%api_favorites'
+    tables.headless.api_saved_searches: '%core.table_prefix%api_saved_searches'
+    tables.headless.api_rate_limits: '%core.table_prefix%api_rate_limits'
+    tables.headless.api_debug_log: '%core.table_prefix%api_debug_log'
+    tables.headless.api_reactions: '%core.table_prefix%api_reactions'
+    tables.headless.api_events: '%core.table_prefix%api_events'
+    tables.headless.api_event_attendees: '%core.table_prefix%api_event_attendees'
+    tables.headless.api_tags: '%core.table_prefix%api_tags'
+    tables.headless.api_topic_tags: '%core.table_prefix%api_topic_tags'
+
+services:
+    # ── Logger / Debug ──────────────────────────────────────────────────────────
+    headless.api.service.logger:
+        class: headless\api\service\logger
+        arguments:
+            - '@config'
+            - '@dbal.conn'
+            - '@user'
+            - '@request'
+            - '%tables.headless.api_debug_log%'
+
+    # ── Response Builder ────────────────────────────────────────────────────────
+    headless.api.service.response_builder:
+        class: headless\api\service\response_builder
+        arguments:
+            - '@headless.api.service.logger'
+
+    # ── Token Manager ───────────────────────────────────────────────────────────
+    headless.api.service.token_manager:
+        class: headless\api\service\token_manager
+        arguments:
+            - '@dbal.conn'
+            - '%tables.headless.api_tokens%'
+            - '@config'
+            - '@headless.api.service.logger'
+
+    # ── Permission Checker ──────────────────────────────────────────────────────
+    headless.api.service.permission_checker:
+        class: headless\api\service\permission_checker
+        arguments:
+            - '@auth'
+            - '@user'
+            - '@dbal.conn'
+            - '@config'
+            - '@headless.api.service.logger'
+
+    # ── Cache Manager ───────────────────────────────────────────────────────────
+    headless.api.service.cache_manager:
+        class: headless\api\service\cache_manager
+        arguments:
+            - '@cache'
+            - '@config'
+            - '@headless.api.service.response_builder'
+            - '@headless.api.service.logger'
+
+    # ── Language Manager ────────────────────────────────────────────────────────
+    headless.api.service.language_manager:
+        class: headless\api\service\language_manager
+        arguments:
+            - '@user'
+            - '@config'
+            - '@dbal.conn'
+            - '%core.root_path%'
+            - '@headless.api.service.logger'
+
+    # ── Doc Generator ───────────────────────────────────────────────────────────
+    headless.api.service.doc_generator:
+        class: headless\api\service\doc_generator
+        arguments:
+            - '@router'
+            - '@headless.api.service.response_builder'
+            - '@headless.api.service.logger'
+
+    # ── Auth Guard (Middleware) ─────────────────────────────────────────────────
+    headless.api.middleware.auth_guard:
+        class: headless\api\middleware\auth_guard
+        arguments:
+            - '@headless.api.service.token_manager'
+            - '@headless.api.service.response_builder'
+            - '@user'
+            - '@auth'
+            - '@dbal.conn'
+            - '@headless.api.service.logger'
+
+    # ── Rate Limiter (Middleware) ───────────────────────────────────────────────
+    headless.api.middleware.rate_limiter:
+        class: headless\api\middleware\rate_limiter
+        arguments:
+            - '@dbal.conn'
+            - '%tables.headless.api_rate_limits%'
+            - '@config'
+            - '@headless.api.service.response_builder'
+            - '@headless.api.service.logger'
+
+    # ── Exception Handler (Middleware) ──────────────────────────────────────────
+    headless.api.middleware.exception_handler:
+        class: headless\api\middleware\exception_handler
+        arguments:
+            - '@headless.api.service.response_builder'
+            - '@headless.api.service.logger'
+
+    # ── Auth Controller ─────────────────────────────────────────────────────────
+    headless.api.controller.auth:
+        class: headless\api\controller\auth
+        arguments:
+            - '@user'
+            - '@auth'
+            - '@config'
+            - '@dbal.conn'
+            - '@headless.api.service.token_manager'
+            - '@headless.api.service.response_builder'
+            - '@headless.api.middleware.auth_guard'
+            - '@headless.api.service.permission_checker'
+            - '@headless.api.service.logger'
+            - '@headless.api.middleware.rate_limiter'
+            - '@passwords.manager'
+
+    # ── Register Controller ─────────────────────────────────────────────────────
+    headless.api.controller.register:
+        class: headless\api\controller\register
+        arguments:
+            - '@user'
+            - '@auth'
+            - '@config'
+            - '@dbal.conn'
+            - '@headless.api.service.response_builder'
+            - '@headless.api.middleware.auth_guard'
+            - '@headless.api.service.logger'
+            - '@headless.api.middleware.rate_limiter'
+            - '@passwords.manager'
+
+    # ── Forum Controller ────────────────────────────────────────────────────────
+    headless.api.controller.forum:
+        class: headless\api\controller\forum
+        arguments:
+            - '@dbal.conn'
+            - '@auth'
+            - '@user'
+            - '@config'
+            - '@headless.api.service.response_builder'
+            - '@headless.api.middleware.auth_guard'
+            - '@headless.api.service.permission_checker'
+            - '@headless.api.service.cache_manager'
+            - '@headless.api.service.logger'
+
+    # ── Topic Controller ────────────────────────────────────────────────────────
+    headless.api.controller.topic:
+        class: headless\api\controller\topic
+        arguments:
+            - '@dbal.conn'
+            - '@auth'
+            - '@user'
+            - '@config'
+            - '@headless.api.service.response_builder'
+            - '@headless.api.middleware.auth_guard'
+            - '@headless.api.service.permission_checker'
+            - '@headless.api.service.logger'
+
+    # ── Post Controller ─────────────────────────────────────────────────────────
+    headless.api.controller.post:
+        class: headless\api\controller\post
+        arguments:
+            - '@dbal.conn'
+            - '@auth'
+            - '@user'
+            - '@config'
+            - '@headless.api.service.response_builder'
+            - '@headless.api.middleware.auth_guard'
+            - '@headless.api.service.permission_checker'
+            - '@headless.api.service.logger'
+
+    # ── User Controller ─────────────────────────────────────────────────────────
+    headless.api.controller.user:
+        class: headless\api\controller\user
+        arguments:
+            - '@dbal.conn'
+            - '@auth'
+            - '@user'
+            - '@config'
+            - '@headless.api.service.response_builder'
+            - '@headless.api.middleware.auth_guard'
+            - '@headless.api.service.permission_checker'
+            - '@headless.api.service.logger'
+
+    # ── Message Controller (PM) ─────────────────────────────────────────────────
+    headless.api.controller.message:
+        class: headless\api\controller\message
+        arguments:
+            - '@dbal.conn'
+            - '@auth'
+            - '@user'
+            - '@config'
+            - '@headless.api.service.response_builder'
+            - '@headless.api.middleware.auth_guard'
+            - '@headless.api.service.permission_checker'
+            - '@headless.api.service.logger'
+
+    # ── Bookmark Controller ─────────────────────────────────────────────────────
+    headless.api.controller.bookmark:
+        class: headless\api\controller\bookmark
+        arguments:
+            - '@dbal.conn'
+            - '@user'
+            - '@headless.api.service.response_builder'
+            - '@headless.api.middleware.auth_guard'
+            - '@headless.api.service.logger'
+
+    # ── Draft Controller ────────────────────────────────────────────────────────
+    headless.api.controller.draft:
+        class: headless\api\controller\draft
+        arguments:
+            - '@dbal.conn'
+            - '@user'
+            - '@headless.api.service.response_builder'
+            - '@headless.api.middleware.auth_guard'
+            - '@headless.api.service.logger'
+
+    # ── Poll Controller ─────────────────────────────────────────────────────────
+    headless.api.controller.poll:
+        class: headless\api\controller\poll
+        arguments:
+            - '@dbal.conn'
+            - '@user'
+            - '@auth'
+            - '@headless.api.service.response_builder'
+            - '@headless.api.middleware.auth_guard'
+            - '@headless.api.service.permission_checker'
+            - '@headless.api.service.logger'
+
+    # ── Friend Controller ───────────────────────────────────────────────────────
+    headless.api.controller.friend:
+        class: headless\api\controller\friend
+        arguments:
+            - '@dbal.conn'
+            - '@user'
+            - '@headless.api.service.response_builder'
+            - '@headless.api.middleware.auth_guard'
+            - '@headless.api.service.logger'
+
+    # ── Group Controller ────────────────────────────────────────────────────────
+    headless.api.controller.group:
+        class: headless\api\controller\group
+        arguments:
+            - '@dbal.conn'
+            - '@auth'
+            - '@headless.api.service.response_builder'
+            - '@headless.api.middleware.auth_guard'
+            - '@headless.api.service.permission_checker'
+            - '@headless.api.service.logger'
+
+    # ── Profile Field Controller ────────────────────────────────────────────────
+    headless.api.controller.profilefield:
+        class: headless\api\controller\profilefield
+        arguments:
+            - '@dbal.conn'
+            - '@user'
+            - '@headless.api.service.response_builder'
+            - '@headless.api.middleware.auth_guard'
+            - '@headless.api.service.logger'
+
+    # ── Favorite Controller ─────────────────────────────────────────────────────
+    headless.api.controller.favorite:
+        class: headless\api\controller\favorite
+        arguments:
+            - '@dbal.conn'
+            - '@user'
+            - '@headless.api.service.response_builder'
+            - '@headless.api.middleware.auth_guard'
+            - '@headless.api.service.logger'
+
+    # ── Report Controller ───────────────────────────────────────────────────────
+    headless.api.controller.report:
+        class: headless\api\controller\report
+        arguments:
+            - '@dbal.conn'
+            - '@auth'
+            - '@user'
+            - '@headless.api.service.response_builder'
+            - '@headless.api.middleware.auth_guard'
+            - '@headless.api.service.permission_checker'
+            - '@headless.api.service.logger'
+
+    # ── Log Controller ──────────────────────────────────────────────────────────
+    headless.api.controller.log:
+        class: headless\api\controller\log
+        arguments:
+            - '@dbal.conn'
+            - '@user'
+            - '@headless.api.service.response_builder'
+            - '@headless.api.middleware.auth_guard'
+            - '@headless.api.service.permission_checker'
+            - '@headless.api.service.logger'
+
+    # ── Event Controller ────────────────────────────────────────────────────────
+    headless.api.controller.event:
+        class: headless\api\controller\event
+        arguments:
+            - '@dbal.conn'
+            - '@auth'
+            - '@user'
+            - '@config'
+            - '@headless.api.service.response_builder'
+            - '@headless.api.middleware.auth_guard'
+            - '@headless.api.service.permission_checker'
+            - '@headless.api.service.logger'
+
+    # ── Tag Controller ──────────────────────────────────────────────────────────
+    headless.api.controller.tag:
+        class: headless\api\controller\tag
+        arguments:
+            - '@dbal.conn'
+            - '@auth'
+            - '@user'
+            - '@headless.api.service.response_builder'
+            - '@headless.api.middleware.auth_guard'
+            - '@headless.api.service.logger'
+
+    # ── Search Controller ───────────────────────────────────────────────────────
+    headless.api.controller.search:
+        class: headless\api\controller\search
+        arguments:
+            - '@dbal.conn'
+            - '@user'
+            - '@config'
+            - '@headless.api.service.response_builder'
+            - '@headless.api.middleware.auth_guard'
+            - '@headless.api.service.logger'
+            - '@auth'
+
+    # ── Notification Controller ─────────────────────────────────────────────────
+    headless.api.controller.notification:
+        class: headless\api\controller\notification
+        arguments:
+            - '@dbal.conn'
+            - '@user'
+            - '@config'
+            - '@headless.api.service.response_builder'
+            - '@headless.api.middleware.auth_guard'
+            - '@headless.api.service.logger'
+
+    # ── Moderation Controller ───────────────────────────────────────────────────
+    headless.api.controller.moderation:
+        class: headless\api\controller\moderation
+        arguments:
+            - '@dbal.conn'
+            - '@auth'
+            - '@user'
+            - '@config'
+            - '@headless.api.service.response_builder'
+            - '@headless.api.middleware.auth_guard'
+            - '@headless.api.service.permission_checker'
+            - '@headless.api.service.logger'
+
+    # ── Attachment Controller ───────────────────────────────────────────────────
+    headless.api.controller.attachment:
+        class: headless\api\controller\attachment
+        arguments:
+            - '@dbal.conn'
+            - '@auth'
+            - '@user'
+            - '@config'
+            - '@headless.api.service.response_builder'
+            - '@headless.api.middleware.auth_guard'
+            - '@headless.api.service.permission_checker'
+            - '@headless.api.service.logger'
+
+    # ── Meta Controller ─────────────────────────────────────────────────────────
+    headless.api.controller.meta:
+        class: headless\api\controller\meta
+        arguments:
+            - '@dbal.conn'
+            - '@user'
+            - '@config'
+            - '@headless.api.service.response_builder'
+            - '@headless.api.middleware.auth_guard'
+            - '@headless.api.service.logger'
+            - '@cache'
+
+    # ── Options Controller ──────────────────────────────────────────────────────
+    headless.api.controller.options:
+        class: headless\api\controller\options
+        arguments:
+            - '@dbal.conn'
+            - '@user'
+            - '@config'
+            - '@headless.api.service.response_builder'
+            - '@headless.api.middleware.auth_guard'
+            - '@headless.api.service.language_manager'
+            - '@headless.api.service.logger'
+
+    # ── Documentation Controller ────────────────────────────────────────────────
+    headless.api.controller.documentation:
+        class: headless\api\controller\documentation
+        arguments:
+            - '@headless.api.service.doc_generator'
+            - '@headless.api.service.response_builder'
+            - '@headless.api.service.logger'
+            - '@router'
+
+    # ── JSON Body Listener ─────────────────────────────────────────────────────
+    headless.api.middleware.json_body_listener:
+        class: headless\api\middleware\json_body_listener
+        tags:
+            - { name: kernel.event_subscriber }
+
+    # ── API Response Listener ──────────────────────────────────────────────────
+    headless.api.middleware.api_response_listener:
+        class: headless\api\middleware\api_response_listener
+        tags:
+            - { name: kernel.event_subscriber }
+
+    # ── Auth Enforcer (global auth via kernel.controller) ─────────────────────
+    headless.api.middleware.auth_enforcer:
+        class: headless\api\middleware\auth_enforcer
+        arguments:
+            - '@headless.api.middleware.auth_guard'
+            - '@headless.api.service.response_builder'
+            - '@headless.api.service.logger'
+        tags:
+            - { name: kernel.event_subscriber }
+
+    # ── Search Service ─────────────────────────────────────────────────────────
+    headless.api.helper.search_service:
+        class: headless\api\helper\search_service
+        arguments:
+            - '@dbal.conn'
+            - '%core.table_prefix%search_wordlist'
+            - '%core.table_prefix%search_wordmatch'
+
+    # ── Token Cleanup Cron ─────────────────────────────────────────────────────
+    headless.api.cron.token_cleanup:
+        class: headless\api\cron\token_cleanup
+        arguments:
+            - '@headless.api.service.token_manager'
+            - '@config'
+            - '@headless.api.service.logger'
+        calls:
+            - [set_name, [cron.task.headless.api.token_cleanup]]
+        tags:
+            - { name: cron.task }

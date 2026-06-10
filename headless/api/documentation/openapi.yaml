@@ -1,0 +1,474 @@
+openapi: "3.0.0"
+info:
+  title: "phpBB 4 Headless API"
+  version: "1.0.0"
+  description: |
+    RESTful API layer for phpBB 4.
+    Provides all forum functionality via JSON for modern frontend applications.
+  contact:
+    name: "EBTURK"
+servers:
+  - url: "/api/v1"
+    description: "API v1"
+security:
+  - BearerAuth: []
+paths:
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: "Login"
+      operationId: "authLogin"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        "200":
+          description: "Success"
+        "401":
+          description: "Invalid username or password"
+  /auth/logout:
+    post:
+      tags: [Auth]
+      summary: "Logout"
+      operationId: "authLogout"
+      responses:
+        "200":
+          description: "Success"
+  /auth/me:
+    get:
+      tags: [Auth]
+      summary: "My profile"
+      operationId: "authMe"
+      responses:
+        "200":
+          description: "User profile"
+  /auth/refresh:
+    post:
+      tags: [Auth]
+      summary: "Refresh token"
+      operationId: "authRefresh"
+      responses:
+        "200":
+          description: "New token"
+  /auth/forgot-password:
+    post:
+      tags: [Auth]
+      summary: "Forgot password"
+      operationId: "authForgotPassword"
+      responses:
+        "200":
+          description: "Email sent"
+  /auth/reset-password:
+    post:
+      tags: [Auth]
+      summary: "Reset password"
+      operationId: "authResetPassword"
+      responses:
+        "200":
+          description: "Password changed"
+  /register:
+    post:
+      tags: [Register]
+      summary: "Register"
+      operationId: "register"
+      responses:
+        "200":
+          description: "Registration successful"
+  /register/verify/{token}:
+    get:
+      tags: [Register]
+      summary: "Verify email"
+      operationId: "verifyEmail"
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Email verified"
+  /register/resend-verification:
+    post:
+      tags: [Register]
+      summary: "Resend verification email"
+      operationId: "resendVerification"
+      responses:
+        "200":
+          description: "Email sent"
+  /forums:
+    get:
+      tags: [Forums]
+      summary: "Forum list"
+      operationId: "forumsList"
+      responses:
+        "200":
+          description: "Forum tree"
+  /forums/{forum_id}:
+    get:
+      tags: [Forums]
+      summary: "Forum details"
+      operationId: "forumShow"
+      parameters:
+        - name: forum_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Forum details"
+  /forums/{forum_id}/topics:
+    get:
+      tags: [Topics]
+      summary: "List topics"
+      operationId: "topicsList"
+      parameters:
+        - name: forum_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Topic list"
+    post:
+      tags: [Topics]
+      summary: "Create topic"
+      operationId: "topicCreate"
+      parameters:
+        - name: forum_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "201":
+          description: "Topic created"
+  /topics/{topic_id}:
+    get:
+      tags: [Topics]
+      summary: "Topic details"
+      operationId: "topicShow"
+      parameters:
+        - name: topic_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Topic details"
+    put:
+      tags: [Topics]
+      summary: "Update topic"
+      operationId: "topicUpdate"
+      parameters:
+        - name: topic_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Topic updated"
+    delete:
+      tags: [Topics]
+      summary: "Delete topic"
+      operationId: "topicDelete"
+      parameters:
+        - name: topic_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Topic deleted"
+  /topics/{topic_id}/subscribe:
+    post:
+      tags: [Topics]
+      summary: "Subscribe to topic"
+      operationId: "topicSubscribe"
+      parameters:
+        - name: topic_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Subscribed"
+    delete:
+      tags: [Topics]
+      summary: "Unsubscribe from topic"
+      operationId: "topicUnsubscribe"
+      parameters:
+        - name: topic_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Unsubscribed"
+  /topics/{topic_id}/posts:
+    get:
+      tags: [Posts]
+      summary: "List posts"
+      operationId: "postsList"
+      parameters:
+        - name: topic_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Post list"
+    post:
+      tags: [Posts]
+      summary: "Create post"
+      operationId: "postCreate"
+      parameters:
+        - name: topic_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "201":
+          description: "Post created"
+  /posts/{post_id}:
+    put:
+      tags: [Posts]
+      summary: "Update post"
+      operationId: "postUpdate"
+      parameters:
+        - name: post_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Post updated"
+    delete:
+      tags: [Posts]
+      summary: "Delete post"
+      operationId: "postDelete"
+      parameters:
+        - name: post_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Post deleted"
+  /posts/{post_id}/report:
+    post:
+      tags: [Posts]
+      summary: "Report post"
+      operationId: "postReport"
+      parameters:
+        - name: post_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Report submitted"
+  /users/{user_id}:
+    get:
+      tags: [Users]
+      summary: "User profile"
+      operationId: "userShow"
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "User profile"
+    put:
+      tags: [Users]
+      summary: "Update user profile"
+      operationId: "userUpdate"
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Profile updated"
+  /users/{user_id}/posts:
+    get:
+      tags: [Users]
+      summary: "User posts"
+      operationId: "userPosts"
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Post list"
+  /users/{user_id}/topics:
+    get:
+      tags: [Users]
+      summary: "User topics"
+      operationId: "userTopics"
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Topic list"
+  /messages:
+    get:
+      tags: [Messages]
+      summary: "My private messages"
+      operationId: "messagesList"
+      responses:
+        "200":
+          description: "Message list"
+    post:
+      tags: [Messages]
+      summary: "Send private message"
+      operationId: "messageCreate"
+      responses:
+        "201":
+          description: "Message sent"
+  /messages/{message_id}:
+    get:
+      tags: [Messages]
+      summary: "Message details"
+      operationId: "messageShow"
+      parameters:
+        - name: message_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Message details"
+    delete:
+      tags: [Messages]
+      summary: "Delete message"
+      operationId: "messageDelete"
+      parameters:
+        - name: message_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Message deleted"
+  /bookmarks:
+    get:
+      tags: [Bookmarks]
+      summary: "My bookmarks"
+      operationId: "bookmarksList"
+      responses:
+        "200":
+          description: "Bookmark list"
+  /topics/{topic_id}/bookmark:
+    post:
+      tags: [Bookmarks]
+      summary: "Add bookmark"
+      operationId: "bookmarkCreate"
+      parameters:
+        - name: topic_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Bookmark added"
+    delete:
+      tags: [Bookmarks]
+      summary: "Remove bookmark"
+      operationId: "bookmarkDelete"
+      parameters:
+        - name: topic_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: "Bookmark removed"
+  /search:
+    get:
+      tags: [Search]
+      summary: "Search"
+      operationId: "search"
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Search results"
+  /notifications:
+    get:
+      tags: [Notifications]
+      summary: "My notifications"
+      operationId: "notificationsList"
+      responses:
+        "200":
+          description: "Notification list"
+  /meta:
+    get:
+      tags: [Meta]
+      summary: "Site information"
+      operationId: "metaIndex"
+      responses:
+        "200":
+          description: "Site information"
+  /meta/stats:
+    get:
+      tags: [Meta]
+      summary: "Forum statistics"
+      operationId: "metaStats"
+      responses:
+        "200":
+          description: "Statistics"
+  /docs:
+    get:
+      tags: [Meta]
+      summary: "API documentation"
+      operationId: "docsIndex"
+      responses:
+        "200":
+          description: "OpenAPI spec"
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
